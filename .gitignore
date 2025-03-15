@@ -201,3 +201,6 @@ api/.vscode
 
 # plugin migrate
 plugins.jsonl
+
+
+.cursorrules

@@ -151,6 +151,9 @@ function Form<
         return null
 
       const disabled = readonly || (isEditMode && (variable === '__model_type' || variable === '__model_name'))
+      // 检查是否是 Azure OpenAI API 基础 URL 字段
+      const isApiBaseUrl = variable === 'openai_api_base'
+      
       return (
         <div key={variable} className={cn(itemClassName, 'py-3')}>
           <div className={cn(fieldLabelClassName, 'flex items-center py-2 system-sm-semibold text-text-secondary')}>
@@ -168,6 +171,7 @@ function Form<
             placeholder={placeholder?.[language] || placeholder?.en_US}
             disabled={disabled}
             type={formSchema.type === FormTypeEnum.textNumber ? 'number' : 'text'}
+            isUrl={isApiBaseUrl}
             {...(formSchema.type === FormTypeEnum.textNumber ? { min: (formSchema as CredentialFormSchemaNumberInput).min, max: (formSchema as CredentialFormSchemaNumberInput).max } : {})} />
           {fieldMoreInfo?.(formSchema)}
           {validating && changeKey === variable && <ValidatingTip />}
