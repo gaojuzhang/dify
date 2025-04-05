@@ -97,3 +97,34 @@ The `.env.example` file provided in the Docker setup is extensive and covers a w
 - **Support**: For detailed configuration options and environment variable settings, refer to the `.env.example` file and the Docker Compose configuration files in the `docker` directory.
 
 This README aims to guide you through the deployment process using the new Docker Compose setup. For any issues or further assistance, please refer to the official documentation or contact support.
+
+
+# 不使用docker desktop之后需要修改的内容
+docker-compose.yaml
+```yaml
+# 自定义增加
+x-shared-env: &shared-api-worker-env
+  HOST_UID: ${HOST_UID:-}    # 新增：宿主机 UID
+  HOST_GID: ${HOST_GID:-}    # 新增：宿主机 GID
+
+# 在容器db、redis、pgvector三个容器中增加
+
+    user: "${HOST_UID}:${HOST_GID}"  # 使用共享环境中的 UID/GID
+```
+
+.env 中增加环境变量
+获取方式
+
+```shell
+HOST_UID=$(id -u)  # 动态获取 UID（但需注意：.env 文件不支持命令执行）
+HOST_GID=$(id -g)  # 需手动填写实际数值（例如 501:20）
+```
+
+
+```ini
+# ------------------------------
+# Common Variables
+# ------------------------------
+HOST_UID=501
+HOST_GID=20
+```
