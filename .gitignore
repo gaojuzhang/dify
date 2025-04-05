@@ -205,3 +205,9 @@ plugins.jsonl
 
 # mise
 mise.toml
+
+# custom
+.cursorrules
+volumes/
+docker/volumes
+docker/volumes-*
