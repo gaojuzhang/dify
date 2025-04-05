@@ -128,8 +128,3 @@ HOST_GID=$(id -g)  # 需手动填写实际数值（例如 501:20）
 HOST_UID=501
 HOST_GID=20
 ```
-
-启动命令
-```shell
-docker compose up -d
-```
