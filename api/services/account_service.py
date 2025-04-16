@@ -571,10 +571,6 @@ class AccountService:
         return False
 
 
-def _get_login_cache_key(*, account_id: str, token: str):
-    return f"account_login:{account_id}:{token}"
-
-
 class TenantService:
     @staticmethod
     def create_tenant(name: str, is_setup: Optional[bool] = False, is_from_dashboard: Optional[bool] = False) -> Tenant:
@@ -913,6 +909,8 @@ class RegisterService:
             db.session.commit()
         except WorkSpaceNotAllowedCreateError:
             db.session.rollback()
+            logging.exception("Register failed")
+            raise AccountRegisterError("Workspace is not allowed to create.")
         except AccountRegisterError as are:
             db.session.rollback()
             logging.exception("Register failed")

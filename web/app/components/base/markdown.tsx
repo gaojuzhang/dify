@@ -27,6 +27,7 @@ import ThinkBlock from '@/app/components/base/markdown-blocks/think-block'
 import { Theme } from '@/types/app'
 import useTheme from '@/hooks/use-theme'
 import cn from '@/utils/classnames'
+import SVGRenderer from './svg-gallery'
 
 // Available language https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/master/AVAILABLE_LANGUAGES_HLJS.MD
 const capitalizationLanguageNameMap: Record<string, string> = {
@@ -65,12 +66,22 @@ const preprocessLaTeX = (content: string) => {
   if (typeof content !== 'string')
     return content
 
-  return flow([
+  const codeBlockRegex = /```[\s\S]*?```/g
+  const codeBlocks = content.match(codeBlockRegex) || []
+  let processedContent = content.replace(codeBlockRegex, 'CODE_BLOCK_PLACEHOLDER')
+
+  processedContent = flow([
     (str: string) => str.replace(/\\\[(.*?)\\\]/g, (_, equation) => `$$${equation}$$`),
     (str: string) => str.replace(/\\\[(.*?)\\\]/gs, (_, equation) => `$$${equation}$$`),
     (str: string) => str.replace(/\\\((.*?)\\\)/g, (_, equation) => `$$${equation}$$`),
     (str: string) => str.replace(/(^|[^\\])\$(.+?)\$/g, (_, prefix, equation) => `${prefix}$${equation}$`),
-  ])(content)
+  ])(processedContent)
+
+  codeBlocks.forEach((block) => {
+    processedContent = processedContent.replace('CODE_BLOCK_PLACEHOLDER', block)
+  })
+
+  return processedContent
 }
 
 const preprocessThinkTag = (content: string) => {
@@ -117,7 +128,7 @@ const CodeBlock: any = memo(({ inline, className, children, ...props }: any) => 
       try {
         return JSON.parse(String(children).replace(/\n$/, ''))
       }
-      catch (error) { }
+      catch { }
     }
     return JSON.parse('{"title":{"text":"ECharts error - Wrong JSON format."}}')
   }, [language, children])
@@ -136,14 +147,13 @@ const CodeBlock: any = memo(({ inline, className, children, ...props }: any) => 
         </div>
       )
     }
-    // Attention: SVGRenderer has xss vulnerability
-    // else if (language === 'svg' && isSVG) {
-    //   return (
-    //     <ErrorBoundary>
-    //       <SVGRenderer content={content} />
-    //     </ErrorBoundary>
-    //   )
-    // }
+    else if (language === 'svg' && isSVG) {
+      return (
+        <ErrorBoundary>
+          <SVGRenderer content={content} />
+        </ErrorBoundary>
+      )
+    }
     else {
       return (
         <SyntaxHighlighter
@@ -212,19 +222,21 @@ const Paragraph = (paragraph: any) => {
   const children_node = node.children
   if (children_node && children_node[0] && 'tagName' in children_node[0] && children_node[0].tagName === 'img') {
     return (
-      <>
+      <div className="markdown-img-wrapper">
         <ImageGallery srcs={[children_node[0].properties.src]} />
         {
-          Array.isArray(paragraph.children) ? <p>{paragraph.children.slice(1)}</p> : null
+          Array.isArray(paragraph.children) && paragraph.children.length > 1 && (
+            <div className="mt-2">{paragraph.children.slice(1)}</div>
+          )
         }
-      </>
+      </div>
     )
   }
   return <p>{paragraph.children}</p>
 }
 
 const Img = ({ src }: any) => {
-  return (<ImageGallery srcs={[src]} />)
+  return <div className="markdown-img-wrapper"><ImageGallery srcs={[src]} /></div>
 }
 
 const Link = ({ node, ...props }: any) => {
@@ -240,19 +252,11 @@ const Link = ({ node, ...props }: any) => {
   }
 }
 
-function escapeSVGTags(htmlString: string): string {
-  return htmlString.replace(/(<svg[\s\S]*?>)([\s\S]*?)(<\/svg>)/gi, (match: string, openTag: string, innerContent: string, closeTag: string): string => {
-    return openTag.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      + innerContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      + closeTag.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  })
-}
-
 export function Markdown(props: { content: string; className?: string; customDisallowedElements?: string[] }) {
   const latexContent = flow([
     preprocessThinkTag,
     preprocessLaTeX,
-  ])(escapeSVGTags(props.content))
+  ])(props.content)
 
   return (
     <div className={cn('markdown-body', '!text-text-primary', props.className)}>
