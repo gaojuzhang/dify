@@ -5,6 +5,8 @@
 # ==================================================================
 
 x-shared-env: &shared-api-worker-env
+  HOST_UID: ${HOST_UID:-}    # 新增：宿主机 UID
+  HOST_GID: ${HOST_GID:-}    # 新增：宿主机 GID
   CONSOLE_API_URL: ${CONSOLE_API_URL:-}
   CONSOLE_WEB_URL: ${CONSOLE_WEB_URL:-}
   SERVICE_API_URL: ${SERVICE_API_URL:-}
@@ -552,6 +554,7 @@ services:
   # The postgres database.
   db:
     image: postgres:15-alpine
+    user: "${HOST_UID}:${HOST_GID}"  # 使用共享环境中的 UID/GID
     restart: always
     environment:
       PGUSER: ${PGUSER:-postgres}
@@ -575,6 +578,7 @@ services:
   # The redis cache.
   redis:
     image: redis:6-alpine
+    user: "${HOST_UID}:${HOST_GID}"  # 使用共享环境中的 UID/GID
     restart: always
     environment:
       REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
@@ -808,6 +812,7 @@ services:
   # The pgvector vector database.
   pgvector:
     image: pgvector/pgvector:pg16
+    user: "${HOST_UID}:${HOST_GID}"  # 使用共享环境中的 UID/GID
     profiles:
       - pgvector
     restart: always
