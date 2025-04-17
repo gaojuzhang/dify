@@ -7,7 +7,6 @@
 volumes/
 docker/volumes
 docker/volumes-*
-docker/docker-compose.override.yaml
 docker/README_CUSTOM.md
 ```
 
