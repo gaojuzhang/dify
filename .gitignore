@@ -214,3 +214,4 @@ volumes/
 docker/volumes
 docker/volumes-*
 docker/README_CUSTOM.md
+docker/docker-compose.backup.yaml

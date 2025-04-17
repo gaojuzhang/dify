@@ -12,7 +12,7 @@ docker/README_CUSTOM.md
 
 - docker-compose.yaml
 
-参考 docker/docker-compose.override.yaml
+参考 docker/docker-compose.backup.yaml
 
 ```yaml
 # 自定义增加
