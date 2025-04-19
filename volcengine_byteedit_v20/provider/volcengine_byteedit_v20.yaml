@@ -1,0 +1,17 @@
+identity:
+  author: gaoju
+  name: volcengine_byteedit_v20
+  label:
+    en_US: volcengine_byteedit_v20
+    zh_Hans: volcengine_byteedit_v20
+    pt_BR: volcengine_byteedit_v20
+  description:
+    en_US: 火山引擎提供的图像编辑服务，基于参考图片生成新图像
+    zh_Hans: 火山引擎提供的图像编辑服务，基于参考图片生成新图像
+    pt_BR: 火山引擎提供的图像编辑服务，基于参考图片生成新图像
+  icon: icon.svg
+tools:
+  - tools/volcengine_byteedit_v20.yaml
+extra:
+  python:
+    source: provider/volcengine_byteedit_v20.py
