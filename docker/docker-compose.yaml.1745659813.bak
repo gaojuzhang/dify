@@ -5,8 +5,6 @@
 # ==================================================================
 
 x-shared-env: &shared-api-worker-env
-  HOST_UID: ${HOST_UID:-}    # 新增：宿主机 UID
-  HOST_GID: ${HOST_GID:-}    # 新增：宿主机 GID
   CONSOLE_API_URL: ${CONSOLE_API_URL:-}
   CONSOLE_WEB_URL: ${CONSOLE_WEB_URL:-}
   SERVICE_API_URL: ${SERVICE_API_URL:-}
