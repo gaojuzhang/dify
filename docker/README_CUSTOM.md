@@ -112,6 +112,8 @@ HOST_GID=$(id -g)  # 需手动填写实际数值（例如 501:20）
 HOST_UID=501
 HOST_GID=20
 
+PIP_MIRROR_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
 # mod 1
 < LOG_TZ=Asia/Shanghai
 < # System Timezone
@@ -123,5 +125,6 @@ HOST_GID=20
 < VECTOR_STORE=pgvector
 ---
 > VECTOR_STORE=weaviate
+
 
 ```
