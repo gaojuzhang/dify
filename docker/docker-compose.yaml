@@ -5,6 +5,8 @@
 # ==================================================================
 
 x-shared-env: &shared-api-worker-env
+  HOST_UID: ${HOST_UID:-}    # 新增：宿主机 UID
+  HOST_GID: ${HOST_GID:-}    # 新增：宿主机 GID
   CONSOLE_API_URL: ${CONSOLE_API_URL:-}
   CONSOLE_WEB_URL: ${CONSOLE_WEB_URL:-}
   SERVICE_API_URL: ${SERVICE_API_URL:-}
@@ -572,18 +574,22 @@ services:
   # The postgres database.
   db:
     image: postgres:15-alpine
+    user: "${HOST_UID}:${HOST_GID}"  # 自定义 使用共享环境中的 UID/GID
     restart: always
     environment:
       PGUSER: ${PGUSER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
       POSTGRES_DB: ${POSTGRES_DB:-dify}
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
+      TZ: ${TZ:-UTC}          # 自定义 时区
+      PGTZ: ${TZ:-UTC}        # 自定义 时区
     command: >
       postgres -c 'max_connections=${POSTGRES_MAX_CONNECTIONS:-100}'
                -c 'shared_buffers=${POSTGRES_SHARED_BUFFERS:-128MB}'
                -c 'work_mem=${POSTGRES_WORK_MEM:-4MB}'
                -c 'maintenance_work_mem=${POSTGRES_MAINTENANCE_WORK_MEM:-64MB}'
                -c 'effective_cache_size=${POSTGRES_EFFECTIVE_CACHE_SIZE:-4096MB}'
+               -c 'timezone=${TZ:-UTC}'
     volumes:
       - ./volumes/db/data:/var/lib/postgresql/data
     healthcheck:
@@ -595,6 +601,7 @@ services:
   # The redis cache.
   redis:
     image: redis:6-alpine
+    user: "${HOST_UID}:${HOST_GID}"  # 自定义 使用共享环境中的 UID/GID
     restart: always
     environment:
       REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
@@ -829,6 +836,7 @@ services:
   # The pgvector vector database.
   pgvector:
     image: pgvector/pgvector:pg16
+    user: "${HOST_UID}:${HOST_GID}"  # 自定义 使用共享环境中的 UID/GID
     profiles:
       - pgvector
     restart: always
@@ -843,6 +851,8 @@ services:
       # pg_bigm module for full text search
       PG_BIGM: ${PGVECTOR_PG_BIGM:-false}
       PG_BIGM_VERSION: ${PGVECTOR_PG_BIGM_VERSION:-1.2-20240606}
+      TZ: ${TZ:-UTC}          # 自定义 时区
+      PGTZ: ${TZ:-UTC}        # 自定义 时区
     volumes:
       - ./volumes/pgvector/data:/var/lib/postgresql/data
       - ./pgvector/docker-entrypoint.sh:/docker-entrypoint.sh
