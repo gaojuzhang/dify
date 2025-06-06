@@ -214,6 +214,7 @@ mise.toml
 volumes/
 docker/volumes
 docker/volumes-*
+docker/volumes_backup
 docker/README_CUSTOM.md
 docker/docker-compose.backup.yaml
 docs
