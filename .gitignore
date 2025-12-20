@@ -245,3 +245,5 @@ scripts/stress-test/reports/
 # settings
 *.local.json
 docker/volumes/*
+docker/volumes-*.tgz
+docker/docker-compose.yaml.*.bak
