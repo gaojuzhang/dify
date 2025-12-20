@@ -228,3 +228,5 @@ web/public/fallback-*.js
 api/.env.backup
 /clickzetta
 docker/volumes/*
+docker/docker-compose.yaml.*.bak
+docker/volumes-*.tgz
